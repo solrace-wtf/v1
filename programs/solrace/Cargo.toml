@@ -1,0 +1,23 @@
+[package]
+name = "solrace"
+version = "1.0.0"
+edition = "2021"
+authors = ["Solrace Team<contact@solrace.wtf>"]
+description = "Fun serverless, solana pvp game inspired by Tron"
+license = "BSD-3-Clause"
+repository = "https://github.com/solrace-wtf/v1"
+
+[dependencies]
+solana-program = "^1.18.7"
+spl-token = "^4.0.1"
+borsh = { version = "^1.3.1", features = ["derive"] }
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+overflow-checks = true
+[profile.release.build-override]
+opt-level = 3
+incremental = false
+codegen-units = 1
