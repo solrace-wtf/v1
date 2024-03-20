@@ -1,40 +1,57 @@
-# Concept
+<div align="center">
+  <img border-radius="25px" max-height="500px" src="./banner.webp" />
+  <h1>Solrace</h1>
+  <p>
+    <strong>Solana's Retro-Arcade Racing Battle Royale<a></strong>
+  </p>
+  <p>
+    <a href="https://opensource.org/licenses/MIT"><img alt="License" src="https://img.shields.io/github/license/solrace-wtf/v1" /></a>
+    <a href="https://discord.gg/PtAkTCwueu"><img alt="Discord Chat" src="https://img.shields.io/discord"/></a>
+  </p>
+</div>
 
-Solrace is a game built on the Solana blockchain, inspired by the iconic Tron game. Players control motorcycles that leave behind growing trails, similar to the mechanics of the classic game Snake. The objective is to outmaneuver opponents, causing them to crash into a trail.
+Solrace is a multiplayer racing battle-royale, inspired by the iconic 80's Tron game, classic Snake and Slither.io.
 
-## Key Features
+## Concept
+- **Gameplay**: Players ride futuristic bikes that leave behind slowly-fading energy trails.
+The objective is to outmaneuver opponents, leading them to crash into a trail or the grid's edge, and be the last one standing.
+- **Elimination Mechanics**: A player is eliminated if they collide with another player's trail. The game is set on a square grid (default size is 256x256), with bikes moving at fixed speeds and capable of turning at 90-degree angles.
+- **Customization**: Players can chose from multiple playable characters and trails. While these do not affect in-game characteristics sur as speed or trail length, it's cool.
+- **Performance**: Solrace is WebGL-based and runs at 60 FPS, ensuring fairness among players.
+- **Serveless Consensus**: The game operates without a central server. Players are interconnected through WebRTC, enabling real-time position tracking and consensus mechanisms for cheat and lag detection following a 66% vote (e.g., 7/10, 4/5, 3/4 or 2/3).
+- **P2E, No BS**: Play to earn in its purest form. Stake to enter a game, race, share the game's pot.
+Note that non-incentivized games have a negative expectancy (slightly below 1:1), the only way to earn is to beat your opponents.
 
-- **Gameplay**: Players join a lobby and stake an entry ticket, denominated in $SOL, to participate. The game blends the multiplayer snake concept with modern PvP elements found in games like slither.io.
-- **Elimination Mechanics**: A player is eliminated if they collide with another player's trail. The game is set on a square grid (default size is 256x256), with motorcycles moving at fixed speeds and capable of turning at 90-degree angles.
-- **Performance and Technology**: Solrace runs at 60 FPS and is WebGL-based, ensuring a smooth gaming experience across compatible web browsers.
-- **Cheat Resistance and Decentralization**: The game operates without a central server. Players are interconnected through WebRTC, enabling real-time position tracking and consensus mechanisms for cheat detection and lag management. If at least 66% of players agree on a cheat or disconnection, the offending player is eliminated from the game.
-- **Client-Side Operations**:
-  - Players can create games with custom rules and submit them to the blockchain along with their entry ticket.
-  - Game lobbies are fetched from the Solana blockchain, with the game starting automatically once the lobby is full, or manually if a sufficient number of players consent.
-  - A consensus mechanism among players, facilitated by WebRTC, confirms positions and detects cheating or disconnections, requiring agreement from 66% of participants for enforcement.
+## Game Lifecycle
+- **Game Creation**: Any user with a Solana wallet can create a game in Solrace with custom settings or use default parameters. Once submitted to the blockchain along with the creator's entry ticket, the game is attributed a unique ID and adheres to the creator's specified rules. Games can be cancelled by the creator at any point before they start.
+- **Game Joining**: To participate in Solrace, users join a game lobby and click "Enroll," which requires staking the game's $SOL ticket price.
+- **Player Withdrawal**: Enrolled players can withdraw their staked $SOL as long as the game hasn't started, ensuring their ability to opt out.
+- **Game Start**: Games automatically begin 10s after the final player enrolls. Alternatively, a game can be manually started by any player after at least two players have enrolled, pending acceptance from the other players.
+- **Game Finish**: Solrace concludes when only one player remains, with others eliminated or disqualified for cheating or lag. It embraces the Battle Royale format to determine the victor.
+- **Rewards Claiming**: The game pot, comprising all entry tickets and additional rewards, is available for claiming up to one hour after game creation. The distribution of the prize pool follows the game creator's scheme (e.g., winner-takes-all, top 3, etc.). If not claimed within one hour, players can reclaim their entry fee, preventing loss of funds.
 
-## Winning and Rewards
+## Consensus
+- **Pre-elimination Signature**: When enrolling for a game, a user stakes the ticket price on the game contract but also locally stores a pre-signed message, agreeing to his elimination.
+- **In-game Frequency**: Consensus between players is reached about 5x/s over WebRTC, confirming their positions on the grid using a fault-tolerant algorithm that checks if a players' data aligns with the game's parameters. 66% of players (e.g., 7/10, 4/5, 3/4 or 2/3) should agree on a state change for it to become the new synchronized shared state.
+- **Anti-Cheat**: If a user is considered cheating, disconnects or lags excessively, he is kicked from the game following the above consensus.
+- **Elimination Criteria**: Similar consensus must be reached for a player to be eliminated
+- **Elimination Signature Propagation**: When a user is eliminated or kicked as per the shared state, he instantly shares his pre-signed message that was generated when they first enrolled in the game.
+- **Reward Claiming**: These above collected signatures are submitted by a game's winners in order to claim their rewards.
+A game's winner should be able to submit all other players elimination signatures, while the second can claim with one signature missing, the third one with two signatures missing, and so on.
+- **Hazardeous Signature Propagation**: The above will occur if at least one user quits the game before being consensually eliminated, his signature not yet being shared. Such quitter needs to re-connect to the game for his client to propagate the signature to the other players for the win to be claimable.
+- **Adversarial Outcomes**: In cases where in-game consensus cannot be achieved due to a corrupted state, the pot cannot be claimed.
+In this scenario, or if a game's winner did not claim his rewards one hour after game creation, players can reclaim their entry ticket, mitigating loss of funds.
 
-- The game's winners share the total pot accumulated from entry tickets.
-- A unique consensus mechanism for eliminations and winner determination ensures fairness, with the last player standing—or the last players, depending on game rules—claiming victory.
-- Rewards are claimed by submitting a "claim_win" transaction on the blockchain, accompanied by signatures from eliminated players as proof of consensus.
-
-## Gameplay Mechanics
-
-- **Enrollment and Withdrawal**: Players must stake $SOL to join a game and can opt out before the game starts, retrieving their stake.
-- **Game Start**: The game commences shortly after the necessary blockchain transactions are confirmed, ensuring all participants are ready.
-- **In-Game Consensus**: Continuous consensus among players is required to validate positions and actions within the game, with specific thresholds set for detecting disconnections and cheating.
-
-## Blockchain Integration
-
-- **Game Creation and Management**: Games are managed through smart contracts on the Solana blockchain, providing transparency and security for transactions and game outcomes.
-- **Economic Model**: Entry fees, pot distribution, and reward claims are handled through the blockchain, with mechanisms in place to ensure fairness and prevent abuse.
+## Technical Specifications
+- **Front-End**: Solrace leverages high-performance WebGL rendering and WebRTC for serverless, peer-to-peer state synchronization. This ensures the game runs smoothly at 60 FPS even on low-end hardware, maintaining fairness among players. WebRTC also facilitates continuous consensus for validating shared in-game states, like player positions, to efficiently identify cheats, lags, and eliminate players.
+- **On-chain Security**: The management of games, ticket stakes, processing of fees, and distribution of pots are all handled on-chain. Game outcomes are securely recorded on Solana and Arweave, offering transparency and security. After reaching a consensus on game outcomes, in-game data is cleared, supporting a low-cost, fast, and trustless model for state management.
+- **True Serverless Architecture**: By pioneering peer-to-peer in-game communication, Solrace avoids dependency on centralized servers for state synchronization and cheat detection. This approach minimizes points of failure and enhances security without compromising the player's experience.
+- **Economic Model**: The blockchain manages entry fees, pot distribution, and reward claims, with systems in place to ensure fairness and prevent abuse. This economic model is designed to support a sustainable and engaging gaming environment for all participants.
 
 # Data Model
 
 The provided Rust code defines the data structures for players, game metrics, game parameters, game statuses, game parameters specific to each game, and the game entity itself. This model supports the game's decentralized architecture, including tracking wins, losses, earnings, player contributions to the game pot, and game outcomes.
 
-# Data model
 ```rust
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub struct Player {
